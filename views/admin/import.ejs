@@ -1,0 +1,46 @@
+<%- include('../partials/header') %>
+<% if (result) { %>
+<section class="card">
+  <div class="card-h"><h3>Import result: <%= result.file %></h3></div>
+  <div class="res-stats">
+    <div>Rows read<b><%= result.total %></b></div><div class="g">Added<b><%= result.added %></b></div>
+    <div class="a">Skipped<b><%= result.skipped.length %></b></div><div class="r">Failed<b><%= result.failed.length %></b></div>
+  </div>
+  <% if (result.added) { %><p><a class="btn pri sm" href="/admin/items">View inventory</a></p><% } %>
+  <% if (result.skipped.length || result.failed.length) { %>
+  <p class="mut">Fix the rows below in your file and import again. Rows already added will be skipped automatically because their codes now exist. Row numbers match the row in Excel.</p>
+  <div class="table-wrap"><table><thead><tr><th>Row</th><th>Result</th><th>Reason</th></tr></thead><tbody>
+    <% result.failed.forEach(f => { %><tr><td class="mono"><%= f.row %></td><td><span class="badge rejected">Failed</span></td><td><%= f.msg %></td></tr><% }) %>
+    <% result.skipped.forEach(f => { %><tr><td class="mono"><%= f.row %></td><td><span class="badge pending">Skipped</span></td><td><%= f.msg %></td></tr><% }) %>
+  </tbody></table></div><% } %>
+</section>
+<% } %>
+
+<div class="cols">
+  <section class="card">
+    <h3>Upload a file</h3>
+    <p class="mut">Add many items at once from a <b>.csv</b> or <b>.xlsx</b> file (up to 2,000 rows, 5 MB). Row 1 must contain the column names.</p>
+    <form id="importForm" method="post" action="/admin/import" enctype="multipart/form-data">
+      <label class="drop"><input type="file" name="file" accept=".csv,.xlsx" required><b>Click to choose a file</b><span>CSV or Excel (.xlsx)</span><em id="fileName" style="font-style:normal">No file chosen</em></label>
+      <div class="form-actions" style="margin-top:14px"><button class="btn pri">Import items</button><a class="btn" href="/admin/import/template">⬇ Download template</a></div>
+    </form>
+    <p class="mut" style="margin-top:14px;font-size:13px">Good rows are added even if other rows have problems. Items whose code already exists are skipped, not overwritten. For every new item with a quantity above 0, an “Opening stock” entry is added to the transaction history.</p>
+  </section>
+
+  <section class="card">
+    <h3>Names that must already exist</h3>
+    <p class="mut" style="margin:4px 0">Categories (spell exactly as shown)</p>
+    <div class="chips"><% opts.categories.forEach(c => { %><span class="chip"><%= c.name %></span><% }) %></div>
+    <p class="mut" style="margin:4px 0">Locations (use the full text)</p>
+    <div class="chips"><% opts.locations.forEach(l => { %><span class="chip"><%= l.label %></span><% }) %></div>
+    <p class="mut" style="margin:4px 0">Conditions</p>
+    <div class="chips"><% conditions.forEach(c => { %><span class="chip"><%= c %></span><% }) %></div>
+    <small class="mut">Missing a category or location? Add it first under Setup. Suppliers are created automatically.</small>
+  </section>
+</div>
+
+<section class="card flush table-wrap">
+  <table><thead><tr><th>Column</th><th>Required</th><th>What to put in it</th></tr></thead>
+  <tbody><% cols.forEach(c => { %><tr><td class="mono"><b><%= c[0] %></b></td><td><%= c[1] %></td><td class="mut"><%= c[2] %></td></tr><% }) %></tbody></table>
+</section>
+<%- include('../partials/footer') %>

@@ -1,0 +1,12 @@
+<%- include('../partials/header') %>
+<form class="card form narrow" method="post" action="/portal/requests">
+  <h3>Request an item</h3><p class="mut">Tell us what you need and why. You can follow the status under My requests.</p>
+  <label>Item *<select name="item_id" required data-info="#info" data-max="1"><option value="">Choose an item…</option>
+    <% items.forEach(i => { %><option value="<%= i.id %>" data-qty="<%= i.quantity %>" data-unit="<%= i.unit %>" <%= sel === i.id ? 'selected' : '' %>><%= i.name %> (<%= i.category %>)</option><% }) %></select>
+    <small class="hint" id="info"></small></label>
+  <div class="grid2"><label>Quantity *<input type="number" name="quantity" min="0.01" step="any" required></label>
+    <label>Needed by<input type="date" name="needed_by" min="<%= today() %>"></label></div>
+  <label>What is it for? *<textarea name="purpose" rows="3" placeholder="e.g. Titration practical for Class XI, Friday" required></textarea></label>
+  <div class="form-actions"><button class="btn pri">Send request</button><a class="btn ghost" href="/portal/catalogue">Back to catalogue</a></div>
+</form>
+<%- include('../partials/footer') %>

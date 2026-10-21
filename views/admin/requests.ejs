@@ -1,0 +1,29 @@
+<%- include('../partials/header') %>
+<div class="tabs">
+  <a class="<%= !status ? 'on' : '' %>" href="/admin/requests">All</a>
+  <% statuses.forEach(s => { %><a class="<%= status === s ? 'on' : '' %>" href="/admin/requests?status=<%= s %>"><%= s.charAt(0).toUpperCase() + s.slice(1) %> <small><%= counts[s] || 0 %></small></a><% }) %>
+</div>
+<% if (!rows.length) { %><div class="card empty-big"><h3>No requests here</h3><p class="mut">Requests from users will show up in this list.</p></div><% } else { %>
+<div class="card flush table-wrap"><table><thead><tr><th>#</th><th>Requested by</th><th>Item</th><th>Qty</th><th>Purpose</th><th>Needed by</th><th>Status</th><th></th></tr></thead>
+<tbody><% rows.forEach(r => { %><tr>
+  <td class="mono"><%= r.id %></td>
+  <td><b><%= r.requester %></b><br><small class="mut"><%= r.department || '' %> · <%= dt(r.created_at) %></small></td>
+  <td><a href="/admin/items/<%= r.item_id %>"><b><%= r.item_name %></b></a><br><small class="mut"><%= r.available %> <%= r.unit %> in stock</small></td>
+  <td><b class="<%= r.quantity > r.available && ['pending','approved'].includes(r.status) ? 'text-rose' : '' %>"><%= r.quantity %></b> <%= r.unit %></td>
+  <td class="wrap-text"><%= r.purpose %><% if (r.admin_note) { %><br><small class="mut">Note: <%= r.admin_note %></small><% } %></td>
+  <td><%= d(r.needed_by) %></td>
+  <td><span class="badge <%= cls(r.status) %>"><%= r.status %></span><% if (r.handler) { %><br><small class="mut">by <%= r.handler %></small><% } %></td>
+  <td class="actions">
+    <% if (r.status === 'pending') { %>
+      <form method="post" action="/admin/requests/<%= r.id %>/approve"><button class="btn sm ok">Approve</button></form>
+      <button class="btn sm danger" type="button" data-reject="/admin/requests/<%= r.id %>/reject">Reject</button>
+    <% } else if (r.status === 'approved') { %>
+      <form method="post" action="/admin/requests/<%= r.id %>/issue" data-confirm="Hand over <%= r.quantity %> <%= r.unit %> of <%= r.item_name %>? Stock will be reduced."><button class="btn sm pri">Issue item</button></form>
+    <% } %>
+  </td></tr><% }) %></tbody></table></div>
+<% } %>
+<dialog id="rejectDlg"><form method="post" class="form">
+  <h3>Reject request</h3><p class="mut">Tell the requester why, so they can fix it and ask again.</p>
+  <label>Reason *<textarea name="note" rows="3" required></textarea></label>
+  <div class="form-actions"><button class="btn danger">Reject request</button><button class="btn ghost" type="button" data-close>Cancel</button></div></form></dialog>
+<%- include('../partials/footer') %>

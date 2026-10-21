@@ -1,0 +1,115 @@
+
+
+
+<%- include('../partials/head') %>
+
+<body class="auth">
+
+  <!-- Left Section -->
+  <section class="auth-art">
+
+    <!-- LabTrack Logo -->
+    <div class="brand light signup-brand">
+      <img
+        src="/images/logo.png"
+        alt="LabTrack Logo"
+        class="signup-logo"
+      >
+      <span>LabTrack</span>
+    </div>
+
+    <h1>Request lab items in a minute.</h1>
+
+    <p>
+      Create a requester account to browse the catalogue and ask for
+      chemicals, glassware or equipment. The lab admin will review
+      your request.
+    </p>
+
+  </section>
+
+  <!-- Right Section -->
+  <section class="auth-form">
+
+    <form method="post" action="/register" class="auth-card">
+
+      <h2>Create your account</h2>
+
+      <% if (flash) { %>
+        <div class="flash <%= flash.type %>" role="alert">
+          <span><%= flash.msg %></span>
+        </div>
+      <% } %>
+
+      <label>
+        Full name
+        <input
+          type="text"
+          name="name"
+          placeholder="Enter your full name"
+          required
+        >
+      </label>
+
+      <label>
+        Email
+        <input
+          type="email"
+          name="email"
+          placeholder="Enter your email address"
+          required
+        >
+      </label>
+
+      <label>
+        Class or department
+        <input
+          type="text"
+          name="department"
+          placeholder="e.g. Class XI Science"
+        >
+      </label>
+
+      <div class="grid2">
+
+        <label>
+          Password
+          <input
+            type="password"
+            name="password"
+            minlength="6"
+            placeholder="Create password"
+            required
+          >
+        </label>
+
+        <label>
+          Confirm password
+          <input
+            type="password"
+            name="confirm"
+            minlength="6"
+            placeholder="Confirm password"
+            required
+          >
+        </label>
+
+      </div>
+
+      <button class="btn pri block" type="submit">
+        Create account
+      </button>
+
+      <p class="mut center">
+        Already registered?
+        <a href="/login">Log in</a>
+      </p>
+
+    </form>
+
+  </section>
+
+</body>
+</html>
+
+

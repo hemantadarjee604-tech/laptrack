@@ -1,0 +1,17 @@
+<%- include('../partials/header') %>
+<section class="hero">
+  <div><h2>What do you need from the lab, <%= user.name.split(' ')[0] %>?</h2><p>Search the catalogue and send a request. The lab admin will review it.</p>
+    <form class="hero-search" action="/portal/catalogue" method="get"><input type="search" name="q" placeholder="Try “beaker”, “ethanol” or “microscope”"><button class="btn light">Search</button></form></div>
+</section>
+<div class="stats">
+<% [['My requests',total,'pri'],['Waiting',counts.pending||0,'amber'],['Approved',counts.approved||0,'blue'],['Received',counts.issued||0,'mint']].forEach(x => { %>
+  <a class="stat <%= x[2] %>" href="/portal/requests"><span><%= x[0] %></span><b><%= x[1] %></b></a><% }) %>
+</div>
+<div class="cols">
+  <section class="card"><div class="card-h"><h3>Recent requests</h3><a href="/portal/requests">See all</a></div>
+    <% if (!mine.length) { %><p class="empty">You have not requested anything yet.</p><a class="btn pri" href="/portal/request/new">Make your first request</a><% } else { %>
+    <ul class="list"><% mine.forEach(r => { %><li><div><b><%= r.item_name %> × <%= r.quantity %> <%= r.unit %></b><small><%= dt(r.created_at) %></small></div><span class="badge <%= cls(r.status) %>"><%= r.status %></span></li><% }) %></ul><% } %></section>
+  <section class="card"><div class="card-h"><h3>Browse by category</h3></div>
+    <div class="tiles"><% cats.forEach(c => { %><a class="tile" href="/portal/catalogue?category=<%= c.id %>"><%= c.name %></a><% }) %></div></section>
+</div>
+<%- include('../partials/footer') %>

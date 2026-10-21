@@ -1,0 +1,25 @@
+<%- include('../partials/header') %>
+<div class="page-head"><div><span class="tag"><%= item.category %></span> <span class="mono mut"><%= item.item_code %></span></div>
+  <div class="row-gap"><a class="btn" href="/admin/stock/in?item=<%= item.id %>">Stock in</a><a class="btn" href="/admin/stock/out?item=<%= item.id %>">Stock out</a><a class="btn pri" href="/admin/items/<%= item.id %>/edit">Edit</a></div></div>
+<div class="cols">
+  <section class="card"><h3><%= item.name %></h3>
+    <div class="big-qty"><b><%= item.quantity %></b> <%= item.unit %> <span class="badge <%= cls(item.stock_status) %>"><%= item.stock_status %></span></div>
+    <dl class="facts">
+      <dt>Minimum stock</dt><dd><%= item.minimum_stock %> <%= item.unit %></dd>
+      <dt>Condition</dt><dd><span class="badge <%= cls(item.condition) %>"><%= item.condition %></span></dd>
+      <dt>Location</dt><dd><%= item.location || 'Not assigned' %></dd>
+      <dt>Supplier</dt><dd><%= item.supplier || '–' %></dd>
+      <% if (item.is_chemical) { %>
+      <dt>Received</dt><dd><%= d(item.date_received) %></dd><dt>Opened</dt><dd><%= d(item.opening_date) %></dd>
+      <dt>Expiry</dt><dd><%= d(item.expiry_date) %> <% if (item.expiry_status) { %><span class="badge <%= cls(item.expiry_status) %>"><%= item.expiry_status %></span><% } %></dd>
+      <% } %>
+      <dt>Last updated</dt><dd><%= dt(item.updated_at) %></dd>
+    </dl>
+    <% if (item.description) { %><p class="mut"><%= item.description %></p><% } %>
+  </section>
+  <section class="card"><div class="card-h"><h3>Recent movements</h3><a href="/admin/transactions?item=<%= item.id %>">All</a></div>
+    <% if (!history.length) { %><p class="empty">No movements yet.</p><% } else { %><ul class="list"><% history.forEach(t => { %>
+      <li><div><b><%= t.reason %></b><small><%= dt(t.transaction_date) %> · <%= t.user_name || 'system' %></small></div><span class="badge <%= cls(t.transaction_type) %>"><%= t.transaction_type === 'IN' ? '+' : '−' %><%= t.quantity %></span></li>
+    <% }) %></ul><% } %></section>
+</div>
+<%- include('../partials/footer') %>

@@ -1,0 +1,292 @@
+{
+  "info": {
+    "name": "LabTrack - API tests",
+    "description": "5 important checks. Start the server (npm run dev) with the database seeded, then run this collection in order with the Collection Runner.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "adminEmail",
+      "value": "admin@labtrack.test"
+    },
+    {
+      "key": "adminPassword",
+      "value": "Admin@123"
+    },
+    {
+      "key": "userEmail",
+      "value": "student@labtrack.test"
+    },
+    {
+      "key": "userPassword",
+      "value": "User@123"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Login with WRONG password",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Wrong password is rejected: redirected back to /login\", function () {",
+              "    pm.response.to.have.status(302);",
+              "    pm.expect(pm.response.headers.get(\"Location\")).to.eql(\"/login\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "login"
+          ]
+        },
+        "description": "Expected: 302 redirect back to /login",
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "email",
+              "value": "{{adminEmail}}",
+              "type": "text"
+            },
+            {
+              "key": "password",
+              "value": "wrong-password-123",
+              "type": "text"
+            }
+          ]
+        }
+      },
+      "protocolProfileBehavior": {
+        "followRedirects": false
+      }
+    },
+    {
+      "name": "2. Login as ADMIN",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Admin login redirects to the admin dashboard (/admin)\", function () {",
+              "    pm.response.to.have.status(302);",
+              "    pm.expect(pm.response.headers.get(\"Location\")).to.eql(\"/admin\");",
+              "});",
+              "pm.test(\"A secure session cookie is issued (connect.sid, HttpOnly)\", function () {",
+              "    const sc = pm.response.headers.filter(h => h.key.toLowerCase() === \"set-cookie\").map(h => h.value).join(\";\");",
+              "    pm.expect(sc).to.include(\"connect.sid\");",
+              "    pm.expect(sc.toLowerCase()).to.include(\"httponly\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "login"
+          ]
+        },
+        "description": "Expected: 302 to /admin and a session cookie. Postman stores the cookie and sends it on the next requests.",
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "email",
+              "value": "{{adminEmail}}",
+              "type": "text"
+            },
+            {
+              "key": "password",
+              "value": "{{adminPassword}}",
+              "type": "text"
+            }
+          ]
+        }
+      },
+      "protocolProfileBehavior": {
+        "followRedirects": false
+      }
+    },
+    {
+      "name": "3. Admin dashboard (needs admin session)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Logged-in admin can open the dashboard (200)\", function () {",
+              "    pm.response.to.have.status(200);",
+              "    pm.expect(pm.response.text()).to.include(\"Needs attention\");",
+              "});",
+              "pm.test(\"Dashboard shows the stock statistics\", function () {",
+              "    pm.expect(pm.response.text()).to.include(\"Total items\");",
+              "    pm.expect(pm.response.text()).to.include(\"Low stock\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/admin",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin"
+          ]
+        },
+        "description": "Run after request 2"
+      }
+    },
+    {
+      "name": "4. Download import template (admin only)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Import template downloads as a CSV file (admin only feature)\", function () {",
+              "    pm.response.to.have.status(200);",
+              "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/csv\");",
+              "    pm.expect(pm.response.headers.get(\"Content-Disposition\")).to.include(\"attachment\");",
+              "});",
+              "pm.test(\"Template starts with the required import columns\", function () {",
+              "    const body = pm.response.text().replace(/^\\uFEFF/, \"\");",
+              "    pm.expect(body.split(\"\\n\")[0]).to.include(\"item_code,name,category\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/admin/import/template",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "import",
+            "template"
+          ]
+        },
+        "description": "Run after request 2"
+      }
+    },
+    {
+      "name": "5. Requester cannot open admin area",
+      "item": [
+        {
+          "name": "5a. Login as REQUESTER",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Requester login redirects to the portal (/portal)\", function () {",
+                  "    pm.response.to.have.status(302);",
+                  "    pm.expect(pm.response.headers.get(\"Location\")).to.eql(\"/portal\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "login"
+              ]
+            },
+            "description": "Replaces the admin session with a requester session",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "email",
+                  "value": "{{userEmail}}",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "{{userPassword}}",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "5b. Requester opens /admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Requester is blocked from the admin area (403)\", function () {",
+                  "    pm.response.to.have.status(403);",
+                  "    pm.expect(pm.response.text()).to.include(\"do not have permission\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin"
+              ]
+            },
+            "description": "Expected: 403"
+          }
+        }
+      ]
+    }
+  ]
+}

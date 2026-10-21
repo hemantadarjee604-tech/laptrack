@@ -1,0 +1,27 @@
+<%- include('../partials/header') %>
+<div class="page-head"><p class="mut"><%= items.length %> item<%= items.length === 1 ? '' : 's' %> found</p><div class="row-gap"><a class="btn" href="/admin/import">⬆ Import CSV / Excel</a><a class="btn pri" href="/admin/items/new">+ Add item</a></div></div>
+<form class="filters card" method="get">
+  <input type="search" name="q" placeholder="Search name, code, location or supplier…" value="<%= f.q || '' %>">
+  <select name="category"><option value="">All categories</option><% opts.categories.forEach(c => { %><option value="<%= c.id %>" <%= f.category == c.id ? 'selected' : '' %>><%= c.name %></option><% }) %></select>
+  <select name="location"><option value="">All locations</option><% opts.locations.forEach(l => { %><option value="<%= l.id %>" <%= f.location == l.id ? 'selected' : '' %>><%= l.label %></option><% }) %></select>
+  <select name="stock"><option value="">Any stock</option><% [['available','Available'],['low','Low stock'],['out','Out of stock']].forEach(s => { %><option value="<%= s[0] %>" <%= f.stock === s[0] ? 'selected' : '' %>><%= s[1] %></option><% }) %></select>
+  <select name="expiry"><option value="">Any expiry</option><% [['safe','Safe'],['soon','Expiring soon'],['expired','Expired']].forEach(s => { %><option value="<%= s[0] %>" <%= f.expiry === s[0] ? 'selected' : '' %>><%= s[1] %></option><% }) %></select>
+  <select name="condition"><option value="">Any condition</option><% conditions.forEach(c => { %><option <%= f.condition === c ? 'selected' : '' %>><%= c %></option><% }) %></select>
+  <button class="btn pri">Filter</button><a class="btn ghost" href="/admin/items">Reset</a>
+</form>
+<% if (!items.length) { %><div class="card empty-big"><h3>No items match</h3><p class="mut">Try clearing the filters or add a new item.</p></div><% } else { %>
+<div class="card flush table-wrap"><table>
+  <thead><tr><th>Code</th><th>Item</th><th>Category</th><th>In stock</th><th>Location</th><th>Condition</th><th>Expiry</th><th></th></tr></thead>
+  <tbody><% items.forEach(i => { %><tr>
+    <td class="mono"><%= i.item_code %></td>
+    <td><a href="/admin/items/<%= i.id %>"><b><%= i.name %></b></a></td>
+    <td><%= i.category %></td>
+    <td><b><%= i.quantity %></b> <%= i.unit %> <span class="badge <%= cls(i.stock_status) %>"><%= i.stock_status %></span></td>
+    <td class="mut"><%= i.location || '–' %></td>
+    <td><span class="badge <%= cls(i.condition) %>"><%= i.condition %></span></td>
+    <td><% if (i.expiry_status) { %><span class="badge <%= cls(i.expiry_status) %>"><%= i.expiry_status %></span> <small class="mut"><%= d(i.expiry_date) %></small><% } else { %>–<% } %></td>
+    <td class="actions"><a class="btn sm" href="/admin/items/<%= i.id %>/edit">Edit</a>
+      <% if (user.role === 'admin') { %><form method="post" action="/admin/items/<%= i.id %>/delete" data-confirm="Delete <%= i.name %> and its history?"><button class="btn sm danger">Delete</button></form><% } %></td>
+  </tr><% }) %></tbody></table></div>
+<% } %>
+<%- include('../partials/footer') %>

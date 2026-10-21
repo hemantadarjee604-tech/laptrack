@@ -1,0 +1,18 @@
+<%- include('../partials/header') %>
+<form class="filters card" method="get">
+  <input type="search" name="q" placeholder="Search the catalogue…" value="<%= f.q || '' %>">
+  <select name="category"><option value="">All categories</option><% opts.categories.forEach(c => { %><option value="<%= c.id %>" <%= f.category == c.id ? 'selected' : '' %>><%= c.name %></option><% }) %></select>
+  <button class="btn pri">Search</button><a class="btn ghost" href="/portal/catalogue">Reset</a>
+</form>
+<% if (!items.length) { %><div class="card empty-big"><h3>Nothing found</h3><p class="mut">Try a different word or choose another category.</p></div><% } else { %>
+<div class="cards"><% items.forEach(i => { %>
+  <article class="item-card">
+    <div class="ic-top"><span class="tag"><%= i.category %></span><span class="badge <%= cls(i.stock_status) %>"><%= i.stock_status %></span></div>
+    <h3><%= i.name %></h3><p class="mut mono"><%= i.item_code %></p>
+    <div class="ic-qty"><b><%= i.quantity %></b> <%= i.unit %> available</div>
+    <% if (i.expiry_status === 'Expiring soon') { %><p class="warn-text">Expires <%= d(i.expiry_date) %></p><% } %>
+    <% if (i.condition !== 'Good') { %><p class="warn-text">Condition: <%= i.condition %></p><% } %>
+    <% if (i.quantity > 0) { %><a class="btn pri block" href="/portal/request/new?item=<%= i.id %>">Request this</a><% } else { %><button class="btn block" disabled>Out of stock</button><% } %>
+  </article><% }) %></div>
+<% } %>
+<%- include('../partials/footer') %>

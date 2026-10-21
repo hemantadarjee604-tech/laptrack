@@ -1,0 +1,10 @@
+<%- include('../partials/header') %>
+<div class="tabs"><% types.forEach(t => { %><a class="<%= t[0] === r.type ? 'on' : '' %>" href="/admin/reports/<%= t[0] %>"><%= t[1].replace(' report', '') %></a><% }) %></div>
+<div class="page-head"><p class="mut"><%= r.note %> <b><%= r.rows.length %></b> row<%= r.rows.length === 1 ? '' : 's' %>.</p>
+  <div class="row-gap noprint"><a class="btn" href="?format=csv">Download CSV</a><button class="btn pri" type="button" onclick="window.print()">Print</button></div></div>
+<% if (!r.rows.length) { %><div class="card empty-big"><h3>Nothing to report</h3><p class="mut">No records match this report right now.</p></div><% } else { %>
+<div class="card flush table-wrap"><table><thead><tr><% r.cols.forEach(c => { %><th><%= c.l %></th><% }) %></tr></thead>
+<tbody><% r.rows.forEach(row => { %><tr><% r.cols.forEach(c => { const v = row[c.k]; %>
+  <td><% if (c.badge && v) { %><span class="badge <%= cls(v) %>"><%= v %></span><% } else { %><%= v === null || v === undefined || v === '' ? '–' : v %><% } %></td><% }) %></tr><% }) %></tbody></table></div>
+<% } %>
+<%- include('../partials/footer') %>

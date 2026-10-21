@@ -1,0 +1,37 @@
+<%- include('../partials/header') %>
+<section class="hero">
+  <div><h2>སྐུ་གཟུགས་བཟང་པོ་ལགས།       <%= user.name.split(' ')[0] %> </h2><p>Here is what is happening in the lab today.</p></div>
+  <div class="qa"><a class="btn light" href="/admin/items/new">+ Add item</a><a class="btn light" href="/admin/stock/in">Stock in</a><a class="btn light" href="/admin/stock/out">Stock out</a><a class="btn light" href="/admin/requests?status=pending">Review requests</a></div>
+</section>
+<div class="stats">
+<% [['Total items',stats.total,'pri','/admin/items'],['Chemicals',stats.chemicals,'mint','/admin/reports/inventory'],['Equipment',stats.equipment,'blue','/admin/reports/inventory'],['Low stock',stats.low,'amber','/admin/items?stock=low'],['Out of stock',stats.outofstock,'rose','/admin/items?stock=out'],['Expired / expiring',stats.expiring,'rose','/admin/reports/expiry']].forEach(x => { %>
+  <a class="stat <%= x[2] %>" href="<%= x[3] %>"><span><%= x[0] %></span><b><%= x[1] %></b></a>
+<% }) %>
+</div>
+<div class="cols">
+  <div class="stack">
+    <section class="card"><div class="card-h"><h3>Needs attention</h3><a href="/admin/reports/low">Low stock report</a></div>
+    <% if (!attention.length) { %><p class="empty">Everything is stocked and in date. 🎉</p><% } else { %>
+      <ul class="list"><% attention.forEach(i => { %>
+        <li><a href="/admin/items/<%= i.id %>"><b><%= i.name %></b><small><%= i.quantity %> / min <%= i.minimum_stock %> <%= i.unit %></small></a>
+          <span><span class="badge <%= cls(i.stock_status) %>"><%= i.stock_status %></span><% if (i.expiry_status && i.expiry_status !== 'Safe') { %> <span class="badge <%= cls(i.expiry_status) %>"><%= i.expiry_status %></span><% } %></span></li>
+      <% }) %></ul><% } %></section>
+    <section class="card"><div class="card-h"><h3>Recent stock activity</h3><a href="/admin/transactions">View all</a></div>
+    <% if (!recent.length) { %><p class="empty">No stock movements yet.</p><% } else { %>
+      <ul class="list"><% recent.forEach(t => { %>
+        <li><div><b><%= t.item_name %></b><small><%= t.reason %> · <%= dt(t.transaction_date) %></small></div><span class="badge <%= cls(t.transaction_type) %>"><%= t.transaction_type === 'IN' ? '+' : '−' %><%= t.quantity %> <%= t.unit %></span></li>
+      <% }) %></ul><% } %></section>
+  </div>
+  <div class="stack">
+    <section class="card"><div class="card-h"><h3>Pending requests</h3><a href="/admin/requests?status=pending">Open</a></div>
+    <% if (!pendingList.length) { %><p class="empty">No requests waiting for you.</p><% } else { %>
+      <ul class="list"><% pendingList.forEach(r => { %>
+        <li><div><b><%= r.item_name %> × <%= r.quantity %></b><small><%= r.requester %> · <%= dt(r.created_at) %></small></div><a class="btn sm" href="/admin/requests?status=pending">Review</a></li>
+      <% }) %></ul><% } %></section>
+    <section class="card"><div class="card-h"><h3>Items by category</h3></div>
+      <% const max = Math.max(1, ...byCategory.map(c => c.n)); byCategory.forEach(c => { %>
+      <div class="bar-row"><span><%= c.name %></span><div class="bar"><i style="width:<%= Math.round(c.n / max * 100) %>%"></i></div><b><%= c.n %></b></div>
+      <% }) %></section>
+  </div>
+</div>
+<%- include('../partials/footer') %>

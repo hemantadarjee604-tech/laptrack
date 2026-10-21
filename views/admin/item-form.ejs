@@ -1,0 +1,29 @@
+<%- include('../partials/header') %>
+<form class="card form" method="post" action="<%= isNew ? '/admin/items' : '/admin/items/' + item.id %>">
+  <h3>Item details</h3>
+  <div class="grid3">
+    <label>Item code *<input name="item_code" value="<%= item.item_code %>" placeholder="CHM-010" required></label>
+    <label class="span2">Item name *<input name="name" value="<%= item.name %>" required></label>
+    <label>Category *<select name="category_id" id="category_id" required><option value="">Choose…</option>
+      <% opts.categories.forEach(c => { %><option value="<%= c.id %>" data-chem="<%= c.is_chemical %>" <%= item.category_id == c.id ? 'selected' : '' %>><%= c.name %></option><% }) %></select></label>
+    <label>Unit<input name="unit" value="<%= item.unit %>" list="units"></label>
+    <datalist id="units"><option>piece</option><option>bottle</option><option>litre</option><option>pair</option><option>box</option><option>kg</option></datalist>
+    <% if (isNew) { %><label>Opening quantity<input type="number" name="quantity" min="0" step="any" value="<%= item.quantity %>"></label>
+    <% } else { %><label>Current quantity<input value="<%= item.quantity %> <%= item.unit %>" disabled><small class="hint">Change it with Stock in / Stock out.</small></label><% } %>
+    <label>Minimum stock<input type="number" name="minimum_stock" min="0" step="any" value="<%= item.minimum_stock %>"></label>
+    <label>Condition<select name="condition"><% conditions.forEach(c => { %><option <%= item.condition === c ? 'selected' : '' %>><%= c %></option><% }) %></select></label>
+    <label>Supplier<select name="supplier_id"><option value="">None</option><% opts.suppliers.forEach(s => { %><option value="<%= s.id %>" <%= item.supplier_id == s.id ? 'selected' : '' %>><%= s.name %></option><% }) %></select></label>
+    <label class="span2">Storage location<select name="location_id"><option value="">Not assigned</option><% opts.locations.forEach(l => { %><option value="<%= l.id %>" <%= item.location_id == l.id ? 'selected' : '' %>><%= l.label %></option><% }) %></select></label>
+  </div>
+  <div id="chemFields" class="chem" hidden>
+    <h3>Chemical dates</h3>
+    <div class="grid3">
+      <label>Date received<input type="date" name="date_received" value="<%= item.date_received || '' %>"></label>
+      <label>Opening date<input type="date" name="opening_date" value="<%= item.opening_date || '' %>"></label>
+      <label>Expiry date<input type="date" name="expiry_date" value="<%= item.expiry_date || '' %>"></label>
+    </div>
+  </div>
+  <label>Description<textarea name="description" rows="3"><%= item.description || '' %></textarea></label>
+  <div class="form-actions"><button class="btn pri">Save item</button><a class="btn ghost" href="<%= isNew ? '/admin/items' : '/admin/items/' + item.id %>">Cancel</a></div>
+</form>
+<%- include('../partials/footer') %>

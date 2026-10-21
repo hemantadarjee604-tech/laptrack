@@ -1,0 +1,24 @@
+<%- include('../partials/header') %>
+<div class="cols side-form">
+  <form class="card form" method="post" action="/admin/<%= key %>/save">
+    <h3><%= edit ? 'Edit ' : 'Add ' %><%= cfg.single %></h3>
+    <% if (edit) { %><input type="hidden" name="id" value="<%= edit.id %>"><% } %>
+    <% cfg.fields.forEach(f => { const v = edit ? edit[f.n] : ''; %>
+      <% if (f.type === 'checkbox') { %><label class="check"><input type="checkbox" name="<%= f.n %>" <%= edit && v ? 'checked' : '' %>> <%= f.l %></label>
+      <% } else if (f.type === 'textarea') { %><label><%= f.l %><textarea name="<%= f.n %>" rows="2"><%= v || '' %></textarea></label>
+      <% } else { %><label><%= f.l %><%= f.req ? ' *' : '' %><input name="<%= f.n %>" value="<%= v || '' %>" <%= f.req ? 'required' : '' %>></label><% } %>
+    <% }) %>
+    <div class="form-actions"><button class="btn pri">Save</button><% if (edit) { %><a class="btn ghost" href="/admin/<%= key %>">Cancel</a><% } %></div>
+  </form>
+  <div class="card flush table-wrap">
+    <% if (!rows.length) { %><p class="empty">Nothing here yet. Add the first <%= cfg.single %>.</p><% } else { %>
+    <table><thead><tr><% cfg.cols.forEach(c => { %><th><%= c.l %></th><% }) %><th>Items</th><th></th></tr></thead>
+    <tbody><% rows.forEach(r => { %><tr>
+      <% cfg.cols.forEach(c => { %><td><%= c.bool ? (r[c.k] ? 'Yes' : '–') : (r[c.k] || '–') %></td><% }) %>
+      <td><%= r.used %></td>
+      <td class="actions"><a class="btn sm" href="/admin/<%= key %>?edit=<%= r.id %>">Edit</a>
+        <form method="post" action="/admin/<%= key %>/<%= r.id %>/delete" data-confirm="Delete this <%= cfg.single %>?"><button class="btn sm danger">Delete</button></form></td>
+    </tr><% }) %></tbody></table><% } %>
+  </div>
+</div>
+<%- include('../partials/footer') %>

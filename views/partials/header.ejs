@@ -1,0 +1,139 @@
+
+<%- include('head') %>
+
+<body>
+<div class="shell">
+
+  <!-- Sidebar -->
+  <aside class="side" id="side">
+
+    <!-- LabTrack Logo -->
+    <a class="brand" href="/" aria-label="LabTrack home">
+      <img
+        src="/images/logo.png"
+        alt="LabTrack Logo"
+        class="brand-logo"
+      >
+      <span>LabTrack</span>
+    </a>
+
+    <!-- Sidebar Navigation -->
+    <nav class="nav">
+
+      <% if (user.role === 'user') { %>
+
+        <!-- Requester Menu -->
+        <a href="/portal">🏠 My dashboard</a>
+        <a href="/portal/catalogue">🧪 Catalogue</a>
+        <a href="/portal/request/new">➕ New request</a>
+        <a href="/portal/requests">📋 My requests</a>
+
+      <% } else { %>
+
+        <!-- Admin Menu -->
+        <a href="/admin">🏠 Dashboard</a>
+
+        <details>
+          <summary>📦 Inventory</summary>
+          <a href="/admin/items">All items</a>
+          <a href="/admin/items/new">Add item</a>
+          <a href="/admin/import">Import CSV / Excel</a>
+        </details>
+
+        <details>
+          <summary>🔄 Stock</summary>
+          <a href="/admin/stock/in">Stock in</a>
+          <a href="/admin/stock/out">Stock out</a>
+          <a href="/admin/transactions">Transaction history</a>
+        </details>
+
+        <a href="/admin/requests">
+          📨 Requests
+          <% if (pending) { %>
+            <span class="count"><%= pending %></span>
+          <% } %>
+        </a>
+
+        <details>
+          <summary>📊 Reports</summary>
+          <a href="/admin/reports/inventory">Inventory</a>
+          <a href="/admin/reports/low">Low stock</a>
+          <a href="/admin/reports/expiry">Expiry</a>
+          <a href="/admin/reports/movement">Stock movement</a>
+          <a href="/admin/reports/location">Locations</a>
+          <a href="/admin/reports/requests">Requests</a>
+        </details>
+
+        <!-- Setup Menu: Admin Only -->
+        <% if (user.role === 'admin') { %>
+          <details>
+            <summary>⚙️ Setup</summary>
+            <a href="/admin/categories">Categories</a>
+            <a href="/admin/locations">Locations</a>
+            <a href="/admin/suppliers">Suppliers</a>
+            <a href="/admin/users">Users</a>
+          </details>
+        <% } %>
+
+      <% } %>
+
+    </nav>
+
+    <!-- Logged-in User Information -->
+    <div class="side-foot">
+      <div class="avatar">
+        <%= user.name.charAt(0).toUpperCase() %>
+      </div>
+
+      <div class="user-info">
+        <b><%= user.name %></b>
+        <small>
+          <%= user.role === 'user' ? 'Requester' : user.role %>
+        </small>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- Mobile Sidebar Background -->
+  <div class="scrim" id="scrim"></div>
+
+  <!-- Main Area -->
+  <div class="main">
+
+    <!-- Top Header -->
+    <header class="top">
+
+      <button
+        class="icon-btn"
+        id="menuBtn"
+        aria-label="Open menu"
+        type="button"
+      >☰</button>
+
+      <h1 class="page-title"><%= title %></h1>
+
+      <form method="post" action="/logout">
+        <button class="btn ghost sm" type="submit">
+          Log out
+        </button>
+      </form>
+
+    </header>
+
+    <!-- Main Page Content -->
+    <main class="content">
+
+      <!-- Flash Messages -->
+      <% if (typeof flash !== 'undefined' && flash) { %>
+        <div class="flash <%= flash.type %>" role="alert">
+          <span><%= flash.msg %></span>
+
+          <button
+            class="x"
+            type="button"
+            aria-label="Dismiss"
+            onclick="this.parentElement.remove()"
+          >×</button>
+        </div>
+      <% } %>

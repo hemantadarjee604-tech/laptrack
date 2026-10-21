@@ -1,0 +1,15 @@
+<%- include('../partials/header') %>
+<div class="page-head"><p class="mut"><%= rows.length %> request<%= rows.length === 1 ? '' : 's' %></p><a class="btn pri" href="/portal/request/new">+ New request</a></div>
+<% if (!rows.length) { %><div class="card empty-big"><h3>No requests yet</h3><p class="mut">Browse the catalogue and request what you need.</p><a class="btn pri" href="/portal/catalogue">Open catalogue</a></div><% } else { %>
+<div class="cards wide"><% rows.forEach(r => { %>
+  <article class="card req">
+    <div class="ic-top"><b>#<%= r.id %> · <%= r.item_name %></b><span class="badge <%= cls(r.status) %>"><%= r.status %></span></div>
+    <p><b><%= r.quantity %></b> <%= r.unit %> · needed by <%= d(r.needed_by) %></p>
+    <p class="mut"><%= r.purpose %></p>
+    <% if (r.admin_note) { %><p class="note"><b>Lab note:</b> <%= r.admin_note %></p><% } %>
+    <div class="steps s-<%= r.status %>"><i>Sent</i><i>Approved</i><i>Received</i></div>
+    <small class="mut">Sent <%= dt(r.created_at) %></small>
+    <% if (r.status === 'pending') { %><form method="post" action="/portal/requests/<%= r.id %>/cancel" data-confirm="Cancel this request?"><button class="btn sm danger">Cancel request</button></form><% } %>
+  </article><% }) %></div>
+<% } %>
+<%- include('../partials/footer') %>

@@ -1,0 +1,16 @@
+<%- include('../partials/header') %>
+<form class="card form narrow" method="post" action="/admin/stock/<%= type %>">
+  <h3><%= type === 'in' ? 'Receive stock' : 'Remove stock' %></h3>
+  <p class="mut"><%= type === 'in' ? 'Use this when new items arrive in the lab.' : 'Use this when items are used, damaged or thrown away.' %></p>
+  <label>Item *<select name="item_id" required data-info="#info"><option value="">Choose an item…</option>
+    <% items.forEach(i => { %><option value="<%= i.id %>" data-qty="<%= i.quantity %>" data-unit="<%= i.unit %>" <%= sel === i.id ? 'selected' : '' %>><%= i.name %> (<%= i.item_code %>)</option><% }) %></select>
+    <small class="hint" id="info"></small></label>
+  <div class="grid2">
+    <label>Quantity *<input type="number" name="quantity" min="0.01" step="any" required></label>
+    <% if (type === 'in') { %><label>Supplier<select name="supplier_id"><option value="">None</option><% suppliers.forEach(s => { %><option value="<%= s.id %>"><%= s.name %></option><% }) %></select></label><% } %>
+  </div>
+  <label>Reason<input name="reason" list="reasons" placeholder="<%= type === 'in' ? 'New purchase' : 'Chemistry practical' %>">
+    <datalist id="reasons"><% (type === 'in' ? ['New purchase','Donation','Returned to store'] : ['Practical','Damaged','Expired / disposed','Lost']).forEach(r => { %><option><%= r %></option><% }) %></datalist></label>
+  <div class="form-actions"><button class="btn pri"><%= type === 'in' ? 'Add to stock' : 'Remove from stock' %></button><a class="btn ghost" href="/admin/items">Cancel</a></div>
+</form>
+<%- include('../partials/footer') %>

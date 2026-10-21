@@ -1,0 +1,128 @@
+
+<%- include('../partials/head') %>
+<body class="auth">
+
+  <!-- Left side: Sherubtse College LabTrack introduction -->
+  <section class="auth-art">
+
+    <div class="brand light login-brand">
+      <img
+        src="/images/logo.png"
+        alt="LabTrack Logo"
+        class="login-logo"
+      >
+      <span>LabTrack</span>
+    </div>
+
+    <p class="college-name">SHERUBTSE COLLEGE</p>
+
+    <h1>Smarter Laboratory Management.</h1>
+
+    <p class="intro-text">
+      LabTrack supports the management of teaching and research
+      laboratories at Sherubtse College. Keep laboratory supplies
+      organised, monitor stock availability, and make it easier for
+      students and staff to request the materials they need.
+    </p>
+
+    <ul class="feature-list">
+      <li>
+        <strong>Organised Inventory</strong>
+        <span>Manage chemicals, glassware, laboratory equipment and other supplies.</span>
+      </li>
+
+      <li>
+        <strong>Stock Monitoring</strong>
+        <span>Track stock levels, record stock movements and identify items that need replenishment.</span>
+      </li>
+
+      <li>
+        <strong>Chemical Expiry Tracking</strong>
+        <span>Monitor expiry dates and identify chemicals that are expired or approaching expiry.</span>
+      </li>
+
+      <li>
+        <strong>Simple Request Management</strong>
+        <span>Allow students to request laboratory items and staff to review and manage requests.</span>
+      </li>
+    </ul>
+
+    <p class="auth-footer">
+      Supporting organised, accountable and efficient laboratory operations.
+    </p>
+
+  </section>
+
+  <!-- Right side: Login form -->
+  <section class="auth-form">
+
+    <form method="post" action="/login" class="auth-card">
+
+      <h2>Welcome Back</h2>
+
+      <p class="mut">
+        Sign in to access your Sherubtse College LabTrack account.
+      </p>
+
+      <% if (flash) { %>
+        <div class="flash <%= flash.type %>" role="alert">
+          <span><%= flash.msg %></span>
+        </div>
+      <% } %>
+
+      <label for="email">
+        Email Address
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="Enter your registered email"
+          required
+          autofocus
+          autocomplete="username"
+        >
+      </label>
+
+      <label for="password">
+        Password
+        <div class="pw">
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Enter your password"
+            required
+            autocomplete="current-password"
+          >
+          <button type="button" data-toggle-pw>Show</button>
+        </div>
+      </label>
+
+      <button class="btn pri block" type="submit">
+        Log In
+      </button>
+
+      <p class="mut center">
+        Need a requester account?
+        <a href="/register">Create an account</a>
+      </p>
+
+      <details class="demo">
+        <summary>Demo accounts</summary>
+        <p>
+          <b>Administrator</b><br>
+          admin@labtrack.test / Admin@123
+        </p>
+        <p>
+          <b>Requester</b><br>
+          student@labtrack.test / User@123
+        </p>
+      </details>
+
+    </form>
+
+  </section>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

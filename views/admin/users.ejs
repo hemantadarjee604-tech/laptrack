@@ -1,0 +1,21 @@
+<%- include('../partials/header') %>
+<form class="card form" method="post" action="/admin/users">
+  <h3>Add user</h3>
+  <div class="grid3">
+    <label>Full name *<input name="name" required></label><label>Email *<input type="email" name="email" required></label>
+    <label>Department<input name="department"></label>
+    <label>Temporary password *<input type="text" name="password" minlength="6" required></label>
+    <label>Role<select name="role"><% roles.forEach(r => { %><option value="<%= r %>" <%= r === 'user' ? 'selected' : '' %>><%= r === 'user' ? 'user (requester)' : r %></option><% }) %></select></label>
+  </div>
+  <div class="form-actions"><button class="btn pri">Create user</button></div>
+</form>
+<div class="card flush table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Requests</th><th>Reset password</th><th></th></tr></thead>
+<tbody><% rows.forEach(u => { %><tr>
+  <td><b><%= u.name %></b><br><small class="mut"><%= u.department || '' %></small></td><td><%= u.email %></td>
+  <td><% if (u.id === user.id) { %><span class="badge good">you · <%= u.role %></span><% } else { %>
+    <form method="post" action="/admin/users/<%= u.id %>/role" class="inline"><select name="role" data-autosubmit><% roles.forEach(r => { %><option <%= u.role === r ? 'selected' : '' %>><%= r %></option><% }) %></select></form><% } %></td>
+  <td><%= u.requests %></td>
+  <td><form method="post" action="/admin/users/<%= u.id %>/password" class="inline"><input type="text" name="password" placeholder="New password" minlength="6" required><button class="btn sm">Reset</button></form></td>
+  <td class="actions"><% if (u.id !== user.id) { %><form method="post" action="/admin/users/<%= u.id %>/delete" data-confirm="Delete <%= u.name %>? Their requests are deleted too."><button class="btn sm danger">Delete</button></form><% } %></td>
+</tr><% }) %></tbody></table></div>
+<%- include('../partials/footer') %>

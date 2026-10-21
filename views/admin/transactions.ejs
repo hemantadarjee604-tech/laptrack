@@ -1,0 +1,13 @@
+<%- include('../partials/header') %>
+<form class="filters card" method="get">
+  <input type="search" name="q" placeholder="Search item, code or reason…" value="<%= f.q || '' %>">
+  <select name="type"><option value="">In and out</option><option value="IN" <%= f.type === 'IN' ? 'selected' : '' %>>Stock in</option><option value="OUT" <%= f.type === 'OUT' ? 'selected' : '' %>>Stock out</option></select>
+  <% if (f.item) { %><input type="hidden" name="item" value="<%= f.item %>"><% } %>
+  <button class="btn pri">Filter</button><a class="btn ghost" href="/admin/transactions">Reset</a>
+</form>
+<% if (!rows.length) { %><div class="card empty-big"><h3>No transactions</h3><p class="mut">Stock in and stock out records will appear here.</p></div><% } else { %>
+<div class="card flush table-wrap"><table><thead><tr><th>Date</th><th>Item</th><th>Type</th><th>Quantity</th><th>Reason</th><th>User</th></tr></thead>
+<tbody><% rows.forEach(t => { %><tr><td><%= dt(t.transaction_date) %></td><td><a href="/admin/items/<%= t.item_id %>"><b><%= t.item_name %></b></a> <small class="mut"><%= t.item_code %></small></td>
+<td><span class="badge <%= cls(t.transaction_type) %>"><%= t.transaction_type %></span></td><td><b><%= t.transaction_type === 'IN' ? '+' : '−' %><%= t.quantity %></b> <%= t.unit %></td><td><%= t.reason %><% if (t.supplier) { %> <small class="mut">· <%= t.supplier %></small><% } %></td><td><%= t.user_name || '–' %></td></tr><% }) %></tbody></table></div>
+<% } %>
+<%- include('../partials/footer') %>
