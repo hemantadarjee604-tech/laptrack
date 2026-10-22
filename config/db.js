@@ -10,8 +10,10 @@ const pool = new Pool({
   port: +process.env.DB_PORT || 5432,
   database: process.env.DB_NAME || 'labtrack',
   user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD
+  password: process.env.DB_PASSWORD,
+  ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
 });
+
 
 const query = (text, params) => pool.query(text, params);
 
